@@ -1,12 +1,8 @@
 
-extern GV *cells;
-extern GV *vars;
-
-void boot_vars(void);
-void savestate_vars(void);
-AV *get_cells(void);
-AV *get_vars(void);
-void clear_vars(void);
-void cut_anonymous_vars(void);
-SV *get_var(SV *name);
-void set_vars(AV *refs, AV *cells);
+void savestate_vars(pTHX_ pMY_CXT);
+AV *get_cells(pTHX_ pMY_CXT);
+AV *get_vars(pTHX_ pMY_CXT);
+void clear_vars(pTHX_ pMY_CXT);
+void cut_anonymous_vars(pTHX_ pMY_CXT);
+SV *get_var(pTHX_ pMY_CXT_ SV *name);
+void set_vars(pTHX_ pMY_CXT_ AV *refs, AV *cells);

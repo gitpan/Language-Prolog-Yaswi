@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/perl/threads/bin/perl
 
 BEGIN {
     require Language::Prolog::Yaswi::Low;

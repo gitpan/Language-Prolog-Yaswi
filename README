@@ -1,4 +1,4 @@
-Language/Prolog/Yaswi version 0.03
+Language/Prolog/Yaswi version 0.04
 ==================================
 
 Language::Prolog::Yaswi provides a bidirectional interface between
@@ -22,6 +22,16 @@ Type the following:
 pl.pl script should be copied to a place in the PATH (pl.pl is a
 wrapper to run Prolog with support for calling Perl).
 
+Both or none Perl and SWI-Prolog have to be compiled with thread
+support. Other configurations are not supported and the build
+process will refuse to make the module with them.
+
+Under Perl only the ithread model is supported.
+
+If you get SEGV errors when using the module try compiling the
+prolog library with --disable-segv-handling (and send me also a
+bug report!).
+
 
 BUGS
 
@@ -31,11 +41,8 @@ expected.
 Specifically, it has been developed and tested only with the 5.1.x
 series of SWI-Prolog.
 
-It has not been tested whith segv-handling enabled (use configure
-option --disable-segv-handling when compiling SWI-Prolog to disable
-it).
-
-There is not thread support yet.
+Loading of prolog shared libraries doesn't work, this is due to a
+limitation on SWI-Prolog itself.
 
 The programing interface should not be considered stable,
 incompatibilities could be introduced in future releases.

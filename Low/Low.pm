@@ -1,6 +1,6 @@
 package Language::Prolog::Yaswi::Low;
 
-our $VERSION = '0.02';
+our $VERSION = '0.04';
 
 use strict;
 use warnings;
@@ -8,6 +8,7 @@ use warnings;
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw( init
+		  cleanup
 		  toplevel
 		  openquery
 		  cutquery
@@ -30,6 +31,7 @@ our @args;
 
 our ($qid, $query, @vars, @cells, %vars_cache);
 
+
 sub getvar ($) {
     my $name=$_[0]->name();
     croak "no such variable '$name'"
@@ -48,7 +50,12 @@ sub getquery () {
 require XSLoader;
 XSLoader::load('Language::Prolog::Yaswi::Low', $VERSION);
 
-@args=(plexe(), '-q');
+@args=(PL_EXE(), '-q');
+
+sub init {
+    @args=(PL_EXE(), @_);
+    start();
+}
 
 our %opaque;
 

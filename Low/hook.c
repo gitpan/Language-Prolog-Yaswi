@@ -1,3 +1,4 @@
+#define  PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -17,10 +18,12 @@ int hook_set=0;
 
 static int my_agc_hook(atom_t a) {
     if(!strcmp(OPAQUE_PREFIX, PL_atom_chars(a))) {
+	dTHX;
 	dSP;
 	ENTER;
 	SAVETMPS;
-	call_sub_sv__sv(PKG "::unregister_opaque",
+	call_sub_sv__sv(aTHX_
+			PKG "::unregister_opaque",
 			sv_2mortal(newSVpv(PL_atom_chars(a),0)));
 	FREETMPS;
 	LEAVE;

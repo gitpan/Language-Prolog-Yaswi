@@ -1,13 +1,8 @@
 
-extern AV *fids;
+fid_t frame(pTHX_ pMY_CXT);
 
+void push_frame(pTHX_ pMY_CXT);
 
-void boot_frames(void);
+void pop_frame(pTHX_ pMY_CXT);
 
-fid_t frame(void);
-
-void push_frame(void);
-
-void pop_frame(void);
-
-void rewind_frame(void);
+void rewind_frame(pTHX_ pMY_CXT);

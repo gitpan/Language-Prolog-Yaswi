@@ -1,6 +1,6 @@
 package Language::Prolog::Yaswi;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use strict;
 use warnings;
@@ -24,12 +24,15 @@ our %EXPORT_TAGS = ( 'query' => [ qw( swi_set_query
 		     'interactive' => [ qw( swi_toplevel )],
 		     'context' => [ qw( $swi_module
 					$swi_ctx_module
-					$swi_converter) ]);
+					$swi_converter) ],
+		     'run' => [ qw( swi_init
+				    swi_cleanup )] );
 
 our @EXPORT_OK = ( @{$EXPORT_TAGS{query}},
 		   @{$EXPORT_TAGS{assert}},
 		   @{$EXPORT_TAGS{interactive}},
-		   @{$EXPORT_TAGS{context}} );
+		   @{$EXPORT_TAGS{context}},
+		   @{$EXPORT_TAGS{run}} );
 
 our @EXPORT = qw();
 
@@ -41,17 +44,11 @@ use Language::Prolog::Yaswi::Low;
 our $swi_module=undef;
 our $swi_ctx_module=undef;
 
+sub swi_init;
+*swi_init=\&init;
 
-
-BEGIN {
-    init();
-}
-
-END {
-    unless (exists $DB::{sub}) {
-	# cleanup(0);
-    }
-}
+sub swi_cleanup();
+*swi_cleanup=\&cleanup;
 
 sub swi_toplevel();
 *swi_toplevel=\&toplevel;
@@ -210,7 +207,7 @@ used to improve the look and readability of scripts mixing Perl and
 Prolog code.
 
 The interface to call Prolog from Perl is very simple, at least if you
-are used to Prolog non deterministic.
+are used to Prolog non deterministic nature.
 
 =head2 SUBROUTINES
 
@@ -342,10 +339,10 @@ i.e.:
 
 =item C<$swi_ctx_module>
 
-allows to change the module and the context module for the upcoming
+allow to change the module and the context module for the upcoming
 queries.
 
-use ALWAYS the C<local> operator when changing its value!!!
+use ALWAYS the C<local> operator when changing their values!!!
 
 i.e.:
 
@@ -364,6 +361,32 @@ classes as opaque, i.e.:
                                     HTTP::Result))
 
 =back
+
+=item C<:run>
+
+=over 4
+
+=item C<swi_init(@args)>
+
+lets init the prolog engine with a different set of arguments
+(identical to the command line arguments for the C<pl> SWI-Prolog
+executable.
+
+Defaults arguments are C<-q> to stop the SWI-Prolog welcome banner
+for being printed to the console.
+
+Language::Prolog::Yaswi will automatically create a new engine with
+the default arguments (or with the last passed via swi_init), when
+needed.
+
+=item C<swi_cleanup()>
+
+releases the prolog engine.
+
+Language::Prolog::Yaswi will release the engine when the script
+finish, this function is usefull to release the engine to free
+resources or to be able to init it again with a different set of
+arguments.
 
 =back
 
@@ -409,14 +432,36 @@ prolog as opaques.
 This module doesn't export anything by default. Subroutines should be
 explicitely imported.
 
+=head2 THREADS
+
+To get thread support in this module both Perl and SWI-Prolog have to
+be previously compiled with threads (Perl needs the ithread model
+available from Perl version 5.8.0, the 5.005 threads model is not
+supported).
+
+When Perl is called back from a thread created from Prolog a new fresh
+Perl engine is constructed. That means there will be no modules
+preloaded on it, no access to Perl data from other threads (not even
+data marked as shared!), etc. Threads created from Perl do not suffer
+from this limitation.
+
+
+=head1 KNOWN BUGS
+
+Under Unix, it's not possible to load prolog shared libraries (i.e.
+xpce).
+
+
 =head1 SEE ALSO
 
-SWI-Prolog documentation L<http://www.swi-prolog.org/>,
-L<Languages::Prolog::Types>, L<Language::Prolog::Sugar>
+SWI-Prolog documentation L<http://www.swi-prolog.org/>, L<pl(1)>,
+L<Languages::Prolog::Types> and L<Language::Prolog::Sugar>.
+
 
 =head1 AUTHOR
 
 Salvador Fandiño, E<lt>sfandino@yahoo.comE<gt>
+
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -424,5 +469,6 @@ Copyright 2003 by Salvador Fandiño
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
+
 
 =cut

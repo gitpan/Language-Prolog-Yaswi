@@ -1,3 +1,3 @@
 
 
-SV *swi2perl(term_t t, AV *cells);
+SV *swi2perl(pTHX_ term_t t, AV *cells);

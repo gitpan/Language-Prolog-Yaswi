@@ -8,18 +8,12 @@
 #include "Low.h"
 #include "argv.h"
 
-AV *args;
-
 int PL_argc;
 char **PL_argv=NULL;
 
-void boot_args(void) {
-    args=get_av(PKG "::args", 1);
-    SvREFCNT_inc(args);
-}
-
 void args2argv(void) {
     int i;
+    AV *args=get_av(PKG "::args", 1);
     free_PL_argv();
     PL_argc=av_len(args)+1;
     Newz(0, PL_argv, PL_argc+1, char *);
@@ -59,9 +53,8 @@ void args2argv(void) {
 void free_PL_argv(void) {
     if (PL_argv) {
 	int i;
-	for (i=0; i<PL_argc; i++) {
-	    if (PL_argv[i])
-		Safefree(PL_argv[i]);
+	for(i=0; PL_argv[i]; i++) {
+	    Safefree(PL_argv[i]);
 	}
 	Safefree(PL_argv);
     }

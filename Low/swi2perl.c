@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -12,7 +13,7 @@
 #include "swi2perl.h"
 
 
-SV *swi2perl(term_t t, AV *cells) {
+SV *swi2perl(pTHX_ term_t t, AV *cells) {
     if (PL_is_integer(t)) {
 	long v;
 	PL_get_long(t, &v);
@@ -43,11 +44,11 @@ SV *swi2perl(term_t t, AV *cells) {
 	    head=PL_new_term_refs(2);
 	    tail=head+1;
 	    PL_get_list(t, head, tail);
-	    av_push(array, swi2perl(head, cells));
+	    av_push(array, swi2perl(aTHX_ head, cells));
 	    t=tail;
 	    len++;
 	}
-	av_push(array, swi2perl(tail, cells));
+	av_push(array, swi2perl(aTHX_ tail, cells));
 	sv_bless(ref, gv_stashpv(TYPEINTPKG "::ulist", 1));
 	return ref;
     }
@@ -60,8 +61,10 @@ SV *swi2perl(term_t t, AV *cells) {
 	if (arity==3 && !strcmp(OPAQUE_FUNCTOR, PL_atom_chars(atom))) {
 	    term_t arg=PL_new_term_ref();
 	    PL_get_arg(1, t, arg);
-	    ref=call_sub_sv__sv (PKG "::get_opaque",
-				 sv_2mortal(swi2perl(arg, cells)));
+	    ref=call_sub_sv__sv (aTHX_
+				 PKG "::get_opaque",
+				 sv_2mortal(swi2perl(aTHX_
+						     arg, cells)));
 	    SvREFCNT_inc(ref);
 	    return ref;
 	}
@@ -75,7 +78,8 @@ SV *swi2perl(term_t t, AV *cells) {
 	    for (i=1; i<=arity; i++) {
 		term_t arg=PL_new_term_ref();
 		PL_get_arg(i, t, arg);
-		av_store(functor, i, swi2perl(arg, cells));
+		av_store(functor, i, swi2perl(aTHX_
+					      arg, cells));
 	    }
 	    return ref;
 	}

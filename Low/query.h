@@ -1,18 +1,13 @@
 
 
-extern SV *qid;
-extern SV *query;
+void savestate_query(pTHX_ pMY_CXT);
 
-void boot_query(void);
+void close_query(pTHX_ pMY_CXT);
 
-void savestate_query(void);
+void cut_query(pTHX_ pMY_CXT);
 
-void closequery(void);
+void test_no_query(pTHX_ pMY_CXT);
 
-void cutquery(void);
+void test_query(pTHX_ pMY_CXT);
 
-void testnoquery(void);
-
-void testquery(void);
-
-int isquery(void);
+int is_query(pTHX_ pMY_CXT);

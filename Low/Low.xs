@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -6,6 +7,7 @@
 
 #include <SWI-Prolog.h>
 
+#include "context.h"
 #include "plconfig.h"
 #include "argv.h"
 #include "swi2perl.h"
@@ -15,31 +17,32 @@
 #include "vars.h"
 #include "query.h"
 #include "callperl.h"
+#include "engines.h"
 #include "Low.h"
 
+/* START_MY_CXT */
 
-static SV *depth;
 
-void savestate_Low() {
-    save_item(depth);
-    sv_inc(depth);
+void savestate_Low(pTHX_ pMY_CXT) {
+    save_item(c_depth);
+    sv_inc(c_depth);
 }
 
 MODULE = Language::Prolog::Yaswi::Low   PACKAGE = Language::Prolog::Yaswi::Low   PREFIX = yaswi_
 
 BOOT:
-depth=get_sv(PKG "::depth", 1);
-SvREFCNT_inc(depth);
-converter=get_sv(PKG "::converter", 1);
-SvREFCNT_inc(converter);
-boot_query();
-boot_args();
-boot_frames();
-boot_vars();
-boot_callperl();
-
+{
+    dTHX;
+    init_cxt(aTHX);
+    boot_callperl();
+}
 
 PROTOTYPES: ENABLE
+
+void
+yaswi_CLONE()
+CODE:
+    init_cxt(aTHX);
 
 
 SV *
@@ -49,40 +52,54 @@ CODE:
 OUTPUT:
     RETVAL
 
+
+void
+yaswi_END()
+PREINIT:
+    dMY_CXT;
+CODE:
+    /* warn ("calling END code (thread=%i)", PL_thread_self()); */
+    release_prolog(aTHX_ aMY_CXT);
+    release_cxt(aTHX_ aMY_CXT);
+
+
 SV *
-yaswi_plexe()
+yaswi_PL_EXE()
 CODE:
     RETVAL=newSVpv(PL_exe, 0);
 OUTPUT:
     RETVAL
 
 
-int
-yaswi_init(...)
+void
+yaswi_start()
+PREINIT:
+    dMY_CXT;
 CODE:
-    if(!PL_is_initialised(NULL, NULL)) {
-	args2argv();
-        RETVAL=PL_initialise(PL_argc, PL_argv);
-	push_frame();
+    if (PL_is_initialised(NULL, NULL)) {
+	croak ("SWI-Prolog engine already initialised");
     }
-    else {
-        RETVAL=1;
-    }
-OUTPUT:
-    RETVAL
+    check_prolog(aTHX_ aMY_CXT);
 
 
-# int
-# yaswi_cleanup(status)
-#     int status
-# CODE:
-#     RETVAL=PL_cleanup(status);
-# OUTPUT:
-#     RETVAL
+void
+yaswi_cleanup()
+PREINIT:
+    dMY_CXT;
+CODE:
+    test_no_query(aTHX_ aMY_CXT);
+    if (SvIV(c_depth) > 1) {
+	croak ("swi_cleanup called from call back");
+    }
+    release_prolog(aTHX_ aMY_CXT);
+
 
 int
 yaswi_toplevel()
+PREINIT:
+    dMY_CXT;
 CODE:
+    check_prolog(aTHX_ aMY_CXT);
     RETVAL=PL_toplevel();
 OUTPUT:
     RETVAL
@@ -91,11 +108,15 @@ OUTPUT:
 SV *
 yaswi_swi2perl(term)
     SV *term;
+PREINIT:
+    dMY_CXT;
 CODE:
+    check_prolog(aTHX_ aMY_CXT);
     if (!SvIOK(term)) {
 	croak ("'%_' is not a valid SWI-Prolog term", term);
     }
-    RETVAL=swi2perl(SvIV(term), get_cells());
+    RETVAL=swi2perl(aTHX_ SvIV(term),
+		    get_cells(aTHX_ aMY_CXT));
 OUTPUT:
     RETVAL
 
@@ -106,14 +127,17 @@ yaswi_openquery(query_obj, module, ctx_module)
     SV *module;
     SV *ctx_module
 PREINIT:
+    dMY_CXT;
     term_t q, arg0;
     functor_t functor;
     module_t m, cm;
     predicate_t predicate;
     AV *refs, *cells;
 PPCODE:
-    testnoquery();
-    q=perl2swi_sv(query_obj,
+    check_prolog(aTHX_ aMY_CXT);
+    test_no_query(aTHX_ aMY_CXT);
+    q=perl2swi_sv(aTHX_
+		  query_obj,
 		  refs=(AV *)sv_2mortal((SV *)newAV()),
 		  cells=(AV *)sv_2mortal((SV *)newAV()));
     if (PL_is_atom(q)) {
@@ -134,48 +158,57 @@ PPCODE:
     else {
 	die ("query is unknow\n");
     }
-    perl2swi_module(module, &m);
+    perl2swi_module(aTHX_ module, &m);
     predicate=PL_pred(functor, m);
-    perl2swi_module(ctx_module, &cm);
-    sv_setiv(qid, PL_open_query(cm,
-				PL_Q_NODEBUG|PL_Q_CATCH_EXCEPTION,
-				predicate, arg0));
+    perl2swi_module(aTHX_ ctx_module, &cm);
+    sv_setiv(c_qid, PL_open_query(cm,
+				  PL_Q_NODEBUG|PL_Q_CATCH_EXCEPTION,
+				  predicate, arg0));
     /* warn("open_query(%_)", qid); */
-    sv_setiv(query, q);
-    push_frame();
-    set_vars(refs, cells);
+    sv_setiv(c_query, q);
+    push_frame(aTHX_ aMY_CXT);
+    set_vars(aTHX_ aMY_CXT_ refs, cells);
     XPUSHs(sv_2mortal(newRV_inc((SV *)refs)));
 
 void
 yaswi_cutquery()
+PREINIT:
+    dMY_CXT;
 CODE:
-    testquery();
-    cutquery();
+    check_prolog(aTHX_ aMY_CXT);
+    test_query(aTHX_ aMY_CXT);
+    cut_query(aTHX_ aMY_CXT);
 
 int
 yaswi_nextsolution()
+PREINIT:
+    dMY_CXT;
 CODE:
-    testquery(); 
-    cut_anonymous_vars();
-    pop_frame();
+    check_prolog(aTHX_ aMY_CXT);
+    test_query(aTHX_ aMY_CXT); 
+    cut_anonymous_vars(aTHX_ aMY_CXT);
+    pop_frame(aTHX_ aMY_CXT);
     /* warn ("next_solution(qid=%_)", qid); */
-    if(PL_next_solution(SvIV(qid))) {
-	push_frame();
+    if(PL_next_solution(SvIV(c_qid))) {
+	push_frame(aTHX_ aMY_CXT);
 	RETVAL=1;
     }
     else {
 	term_t e;
 	RETVAL=0;
-	if (e=PL_exception(SvIV(qid))) {
+	if (e=PL_exception(SvIV(c_qid))) {
 	    /* warn ("exception cached"); */
 	    SV *errsv = get_sv("@", TRUE);
-	    sv_setsv(errsv, sv_2mortal(swi2perl(e, get_cells())));
-	    closequery();
+	    sv_setsv( errsv,
+		      sv_2mortal(swi2perl(aTHX_
+					  e,
+					  get_cells(aTHX_ aMY_CXT))));
+	    close_query(aTHX_ aMY_CXT);
 	    croak(Nullch);
 	    /* croak ("exception pop up from Prolog"); */
 	}
 	else {
-	    closequery();
+	    close_query(aTHX_ aMY_CXT);
 	}
     }
 OUTPUT:
@@ -183,8 +216,11 @@ OUTPUT:
     
 void
 yaswi_testquery()
+PREINIT:
+    dMY_CXT;
 CODE:
-    testquery();
+    check_prolog(aTHX_ aMY_CXT);
+    test_query(aTHX_ aMY_CXT);
 
 
 IV

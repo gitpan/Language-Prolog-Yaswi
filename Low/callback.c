@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -7,7 +8,7 @@
 
 #include "callback.h"
 
-SV *call_method__sv(SV *object, char *method) {
+SV *call_method__sv(pTHX_ SV *object, char *method) {
     dSP;
     SV *result;
     
@@ -26,7 +27,7 @@ SV *call_method__sv(SV *object, char *method) {
     return sv_2mortal(result);
 }
 
-int call_method__int(SV *object, char *method) {
+int call_method__int(pTHX_ SV *object, char *method) {
     dSP;
     int result;
     
@@ -44,7 +45,7 @@ int call_method__int(SV *object, char *method) {
     return result;
 }
 
-SV *call_method_int__sv(SV *object, char *method, int i) {
+SV *call_method_int__sv(pTHX_ SV *object, char *method, int i) {
     dSP;
     SV *result;
     
@@ -64,7 +65,7 @@ SV *call_method_int__sv(SV *object, char *method, int i) {
     return sv_2mortal(result);
 }
 
-SV *call_method_sv__sv(SV *object, char *method, SV *arg) {
+SV *call_method_sv__sv(pTHX_ SV *object, char *method, SV *arg) {
     dSP;
     SV *result;
     
@@ -84,7 +85,7 @@ SV *call_method_sv__sv(SV *object, char *method, SV *arg) {
     return sv_2mortal(result);
 }
 
-SV *call_sub_sv__sv(char *name, SV *arg) {
+SV *call_sub_sv__sv(pTHX_ char *name, SV *arg) {
     dSP;
     SV *result;
 

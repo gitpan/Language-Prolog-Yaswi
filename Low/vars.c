@@ -1,3 +1,4 @@
+#define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -6,61 +7,52 @@
 
 #include <SWI-Prolog.h>
 
+#include "context.h"
+
 #include "Low.h"
 #include "swi2perl.h"
 #include "callback.h"
 #include "vars.h"
 
-GV *vars;
-GV *cells;
-static GV *cache;
 
-void boot_vars(void) {
-    cells=gv_fetchpv(PKG "::cells", GV_ADDMULTI, SVt_PVAV);
-    SvREFCNT_inc(cells);
-    vars=gv_fetchpv(PKG "::vars", GV_ADDMULTI, SVt_PVAV);
-    SvREFCNT_inc(vars);
-    cache=gv_fetchpv(PKG "::vars_cache", GV_ADDMULTI, SVt_PVHV);
-    SvREFCNT_inc(cache);
-}
-
-AV *get_cells(void) {
+AV *get_cells(pTHX_ pMY_CXT) {
     AV *av;
-    if (av=GvAV(cells)) return av;
-    return GvAV(cells)=newAV();
+    if (av=GvAV(c_cells)) return av;
+    return GvAV(c_cells)=newAV();
 }
 
-AV *get_vars(void) {
+AV *get_vars(pTHX_ pMY_CXT) {
     AV *av;
-    if (av=GvAV(vars)) return av;
-    return GvAV(vars)=newAV();
+    if (av=GvAV(c_vars)) return av;
+    return GvAV(c_vars)=newAV();
 }
 
-HV *get_cache(void) {
+HV *get_cache(pTHX_ pMY_CXT) {
     HV *hv;
-    if (hv=GvHV(cache)) return hv;
-    return GvHV(cache)=newHV();
+    if (hv=GvHV(c_cache)) return hv;
+    return GvHV(c_cache)=newHV();
 }
-void savestate_vars(void) {
-    save_ary(vars);
-    save_ary(cells);
-    save_hash(cache);
-}
-
-void clear_vars(void) {
-    av_clear(get_vars());
-    av_clear(get_cells());
-    hv_clear(get_cache());
+void savestate_vars(pTHX_ pMY_CXT) {
+    save_ary(c_vars);
+    save_ary(c_cells);
+    save_hash(c_cache);
 }
 
-void cut_anonymous_vars(void) {
-    av_fill(get_cells(), av_len(get_vars()));
+void clear_vars(pTHX_ pMY_CXT) {
+    av_clear(get_vars(aTHX_ aMY_CXT));
+    av_clear(get_cells(aTHX_ aMY_CXT));
+    hv_clear(get_cache(aTHX_ aMY_CXT));
 }
 
-void set_vars(AV *nrefs, AV *ncells) {
-    AV *vars=get_vars();
-    AV *cells=get_cells();
-    HV *cache=get_cache();
+void cut_anonymous_vars(pTHX_ pMY_CXT) {
+    av_fill(get_cells(aTHX_ aMY_CXT),
+	    av_len(get_vars(aTHX_ aMY_CXT)));
+}
+
+void set_vars(pTHX_ pMY_CXT_ AV *nrefs, AV *ncells) {
+    AV *vars=get_vars(aTHX_ aMY_CXT);
+    AV *cells=get_cells(aTHX_ aMY_CXT);
+    HV *cache=get_cache(aTHX_ aMY_CXT);
     int i, len;
     if (av_len(vars)>=0 || av_len(cells)>=0) {
 	warn ("vars/cells stack is not empty");
@@ -75,7 +67,7 @@ void set_vars(AV *nrefs, AV *ncells) {
 	    die ("corrupted refs/cells stack, ref %i is NULL", i);
 	}
 	if (sv_derived_from(*var, TYPEPKG "::Variable")) {
-	    SV *name=call_method__sv(*var, "name");
+	    SV *name=call_method__sv(aTHX_ *var, "name");
 	    char *cname;
 	    int vlen;
 	    cname=SvPV(name, vlen);
