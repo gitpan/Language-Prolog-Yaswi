@@ -26,8 +26,14 @@ if ($^O=~/Win32/) {
     $plvar{PLPATH}=qq($plvar{PLBASE}/bin);
 }
 else {
-    $plvar{PLLIBS}.=" -L$plvar{PLBASE}/runtime/$plvar{PLARCH}/ ";
-    $plvar{PLLIBS}.=($plvar{PLTHREADS} eq 'yes') ? '-lplmt' : '-lpl';
+    if ($plvar{PLVERSION} >= 50400) {
+	$plvar{PLLIBS}.=" -L$plvar{PLBASE}/lib/$plvar{PLARCH}/ -lpl";
+    }
+    else {	
+	$plvar{PLLIBS}.=" -L$plvar{PLBASE}/runtime/$plvar{PLARCH}/ ";
+	$plvar{PLLIBS}.=($plvar{PLTHREADS} eq 'yes') ? '-lplmt' : '-lpl';
+    }
+
     # $plvar{PLLIBS}.=' -export-dynamic';
     $plvar{PLINC}="-I$plvar{PLBASE}/include";
     $plvar{PLEXE}="$plvar{PLBASE}/bin/$plvar{PLARCH}/pl";
@@ -93,10 +99,10 @@ WriteMakefile(
     'INC'		=> "-I. $plvar{PLINC}",
     'OBJECT'            => '$(BASEEXT)$(OBJ_EXT) callback$(OBJ_EXT) callperl$(OBJ_EXT)'.
 	                   ' hook$(OBJ_EXT) perl2swi$(OBJ_EXT) swi2perl$(OBJ_EXT)'.
-	                   ' frames$(OBJ_EXT) plconfig$(OBJ_EXT) argv$(OBJ_EXT)'.
+	                   ' plconfig$(OBJ_EXT) argv$(OBJ_EXT)'.
 	                   ' query$(OBJ_EXT) vars$(OBJ_EXT) context$(OBJ_EXT)'.
-	                   ' engines$(OBJ_EXT)',
+	                   ' engines$(OBJ_EXT) opaque$(OBJ_EXT)',
 #    'LDDLFLAGS'         => '-export-dynamic',
-#    'OPTIMIZE'		=> '-g',
+     'OPTIMIZE'		=> '-g -O0',
 );
 
