@@ -1,0 +1,64 @@
+Language/Prolog/Yaswi version 0.02
+==================================
+
+Language::Prolog::Yaswi provides a bidirectional interface between
+Perl and SWI-Prolog (http://www.swi-prolog.org/)
+
+
+INSTALLATION
+
+To install this module the SWI-Prolog executable "pl" has to be in the
+PATH or alternatively the PL environment variable can be used to
+select another executable name and location.
+
+Type the following:
+
+   perl Makefile.PL
+   # or 'PL=/path/to/my/swi-prolog/executable perl Makefile.PL'
+   make
+   make test
+   make install
+
+pl.pl script should be copied to a place in the PATH (pl.pl is a
+wrapper to run Prolog with support for calling Perl).
+
+
+BUGS
+
+This is a very early alpha release and lots of bugs should be
+expected.
+
+Specifically, it has been developed and tested only with the 5.1.x
+series of SWI-Prolog.
+
+It has not been tested whith segv-handling enabled (use configure
+option --disable-segv-handling when compiling SWI-Prolog to disable
+it).
+
+There is not thread support yet.
+
+Not tested under Windows, it may or may not work.
+
+The programing interface should not be considered stable,
+incompatibilities could be introduced in future releases.
+
+
+DEPENDENCIES
+
+This module requires SWI-Prolog already installed in your system and
+these other modules and libraries:
+
+	Language::Prolog::Types
+	Language::Prolog::Sugar (recommended)
+	Test::More (only for testing)
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2003 Salvador Fandiño
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+SWI-Prolog is distributed under the LGPL/GPL licenses, consult the
+documentation bundled with your copy for details.
