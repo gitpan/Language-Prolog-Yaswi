@@ -87,7 +87,6 @@ SV *swi2perl(term_t t, AV *cells) {
 	SV *cell;
 	SV *ref;
 	for(i=0; i<len; i++) {
-	    term_t vterm;
 	    SV **ref_p=av_fetch(cells, i, 0);
 	    if (!ref_p)
 		die ("internal error, unable to fetch var from cache");
@@ -112,5 +111,7 @@ SV *swi2perl(term_t t, AV *cells) {
 	PL_get_string_chars(t, &v, &len);
 	return newSVpv(v, len);
     }
+    warn ("unknow SWI-Prolog type, using undef");
+    return &PL_sv_undef;
 }
 

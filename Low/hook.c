@@ -8,17 +8,14 @@
 
 #include "Low.h"
 #include "opaque.h"
+#include "callback.h"
 #include "hook.h"
 
 PL_agc_hook_t old_agc_hook=NULL;
 int hook_set=0;
 
-void set_my_agc_hook(void) {
-    hook_set=1;
-    old_agc_hook=PL_agc_hook(my_agc_hook);
-}
 
-int my_agc_hook(atom_t a) {
+static int my_agc_hook(atom_t a) {
     if(!strcmp(OPAQUE_PREFIX, PL_atom_chars(a))) {
 	dSP;
 	ENTER;
@@ -34,3 +31,9 @@ int my_agc_hook(atom_t a) {
     }
     return TRUE;
 }
+
+void set_my_agc_hook(void) {
+    hook_set=1;
+    old_agc_hook=PL_agc_hook(my_agc_hook);
+}
+

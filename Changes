@@ -1,5 +1,9 @@
 Revision history for Perl extension Language::Prolog::Yaswi.
 
+0.03  Thu Jan 23 2003
+	- ported to MS Windows.
+	- problems with missing include headers corrected
+
 0.02  Wed Jan 22 2003
 	- cleaned up for CPAN distribution
 

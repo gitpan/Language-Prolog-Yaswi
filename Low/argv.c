@@ -4,6 +4,7 @@
 
 #include "ppport.h"
 
+#include "plconfig.h"
 #include "Low.h"
 #include "argv.h"
 
@@ -45,6 +46,13 @@ void args2argv(void) {
 	Copy(arg, PL_argv[i], len, char);
 	PL_argv[i][len]='\0';
     }
+    /*
+    for (i=0; i<PL_argc; i++) {
+	fprintf(stderr, "arg %i: '%s'\n", i, PL_argv[i]);
+    }
+    fprintf(stderr, "PLEXE=%s (len=%i)\n",
+	    PL_exe, strlen(PL_exe));
+    */
 }
 
 

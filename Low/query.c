@@ -4,7 +4,11 @@
 
 #include "ppport.h"
 
+#include <SWI-Prolog.h>
+
+#include "frames.h"
 #include "Low.h"
+#include "vars.h"
 #include "query.h"
 
 SV *qid;

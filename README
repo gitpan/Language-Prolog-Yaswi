@@ -1,4 +1,4 @@
-Language/Prolog/Yaswi version 0.02
+Language/Prolog/Yaswi version 0.03
 ==================================
 
 Language::Prolog::Yaswi provides a bidirectional interface between
@@ -37,10 +37,20 @@ it).
 
 There is not thread support yet.
 
-Not tested under Windows, it may or may not work.
-
 The programing interface should not be considered stable,
 incompatibilities could be introduced in future releases.
+
+
+MS WINDOWS SUPPORT
+
+This module has been minimal tested under windows, it seems to work,
+and I plan to support it, but the primary development platform
+continues to be Unix.
+
+To make it work, the "bin" directory for your SWI-Prolog installation
+will have to be included in your PATH also at runtime (If you get an
+error telling about the lippl.dll being missing, try using 8 chars
+names in the PATH, i.e. C:\PROGRA~1\SWI-PR~1\BIN).
 
 
 DEPENDENCIES

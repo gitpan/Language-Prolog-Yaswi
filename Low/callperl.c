@@ -6,9 +6,11 @@
 
 #include <SWI-Prolog.h>
 
+#include "frames.h"
 #include "perl2swi.h"
 #include "swi2perl.h"
 #include "query.h"
+#include "vars.h"
 #include "Low.h"
 #include "callperl.h"
 

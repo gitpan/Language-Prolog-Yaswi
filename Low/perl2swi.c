@@ -114,7 +114,6 @@ static term_t perl2swi_list(SV *o, AV *refs, AV *cells) {
     int i;
     int len;
     term_t tail, list;
-    SV *el;
 
     len=call_method__int(o, "length");
     tail=perl2swi_sv( call_method__sv(o, "tail"),
@@ -142,7 +141,6 @@ static term_t perl2swi_functor(SV *o, AV *refs, AV *cells) {
     term_t arg0=PL_new_term_refs(arity);
     atom_t name;
     for(i=0; i<arity; i++) {
-	term_t arg;
 	ENTER;
 	SAVETMPS;
 	PL_unify(arg0+i, 
@@ -168,7 +166,7 @@ static term_t perl2swi_var(SV *sv, AV *refs, AV *cells) {
 static term_t perl2swi_opaque(SV *o, AV *refs, AV *cells) {
     dSP;
     SV *key;
-    term_t t, tatom;
+    term_t t;
     ENTER;
     SAVETMPS;
     key=call_sub_sv__sv(PKG "::register_opaque",
