@@ -319,8 +319,10 @@ pl_unify_perl_sv(pTHX_ term_t t, SV *sv, AV *refs, AV *cells) {
 void perl2swi_module(pTHX_ SV *sv, module_t *m) {
     /* warn ("converting %_ to module\n", sv); */
     if(SvOK(sv)) {
-	atom_t name=PL_new_atom(SvPV_nolen(sv));
-	PL_get_module(name, m);
+	STRLEN len;
+	char *str = SvPV(sv, len);
+	atom_t name=PL_new_atom_nchars(len, str);
+	*m = PL_new_module(name);
 	PL_unregister_atom(name);	
     }
     else {
