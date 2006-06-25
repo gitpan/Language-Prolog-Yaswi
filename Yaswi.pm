@@ -1,6 +1,6 @@
 package Language::Prolog::Yaswi;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use strict;
 use warnings;
@@ -295,8 +295,9 @@ Grouped by export tag:
 
 =item swi_set_query($query1, $query2, $query3, ...)
 
-Compose a query with all its parameters and sets it. Return the set of
-free variables found in the query.
+Composes a query with all the parameters given and sets it.
+
+The set of free variables found in the query is returned.
 
 =item swi_set_query_module($query, $module)
 
@@ -304,7 +305,7 @@ Allows to set a query in a module different than the default.
 
 =item swi_result
 
-Return the values binded to the variables in the query.
+Returns the values binded to the variables in the query.
 
 =item swi_next
 
@@ -313,7 +314,7 @@ Iterates over the query solutions.
 If a new solution is available returns true, if not, closes the query
 and returns false.
 
-It should be called after C<swi_set_query(...)> to obtain the first
+It has to be called after C<swi_set_query(...)> to obtain the first
 solution.
 
 =item swi_var($var)
@@ -509,6 +510,8 @@ arguments.
 
 =back
 
+=back
+
 =head2 CALLBACKS
 
 Yaswi adds to SWI-Prolog three new predicates to call perl back.
@@ -577,6 +580,8 @@ xpce).
 
 SWI-Prolog documentation L<http://www.swi-prolog.org/>, L<pl(1)>,
 L<Languages::Prolog::Types> and L<Language::Prolog::Sugar>.
+
+L<AI::Prolog> is a Prolog implementation in pure Perl.
 
 
 =head1 COPYRIGHT AND LICENSE

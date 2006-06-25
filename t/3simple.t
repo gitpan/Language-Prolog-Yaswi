@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 10;
+use Test::More tests => 20;
 
 use strict;
 use warnings;
@@ -38,10 +38,17 @@ swi_inline <<CODE;
 tubolize(foo).
 tubolize(bar).
 
+tubolize(X, X).
+
 CODE
 
 is_deeply( [swi_find_all(tubolize(X), X )], [qw(foo bar)], "swi_inline");
 
+for (1..10) {
+    # my $uni = pack "U*" => map rand(2**30), 1..10+rand(20);
+    my $uni = pack "b*" => map rand(2**6), 1..10+rand(20);
+    is (swi_find_one(tubolize($uni, X), X), $uni, "unicode $_");
+}
 
 swi_inline_module <<CODE;
 
