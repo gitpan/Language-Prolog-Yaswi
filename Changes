@@ -1,9 +1,14 @@
 Revision history for Perl extension Language::Prolog::Yaswi.
 
+0.12  Sep 25 2006
+        - CLONE was not expecting arguments (bug reported by Yohann
+          Thomas).
+        - improved docs.
+
 0.10  Jun 25 2006
         - use DynaLoader instead of XSLoader and make symbols
           available to other modules so that Prolog C extensions can
-          be loaded.
+          be used.
 	- add pod testing
 	- pod errors corrected
 
