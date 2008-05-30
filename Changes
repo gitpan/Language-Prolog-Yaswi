@@ -1,5 +1,8 @@
 Revision history for Perl extension Language::Prolog::Yaswi.
 
+0.15  May 30, 2008
+        - module updated to compile under perl 5.10.0
+
 0.14  Nov 24 2006
         - pod error corrected
 

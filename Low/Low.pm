@@ -1,6 +1,6 @@
 package Language::Prolog::Yaswi::Low;
 
-our $VERSION = '0.13';
+our $VERSION = '0.15';
 
 use strict;
 use warnings;

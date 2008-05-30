@@ -181,7 +181,7 @@ pl_unify_perl_var(pTHX_ term_t t, SV *sv, AV *refs, AV *cells) {
 
 static int
 pl_unify_perl_any_ref(pTHX_ term_t t, SV *ref, AV *refs, AV *cells) {
-    dMY_CXT;
+    MY_dMY_CXT;
     return pl_unify_perl_sv(aTHX_ t,
 			    call_method_sv__sv(aTHX_ c_converter,
 					       "perl_ref2prolog", ref),

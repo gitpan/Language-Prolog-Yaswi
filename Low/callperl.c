@@ -131,7 +131,7 @@ static foreign_t swi2perl_sub(term_t name,
 			      term_t args,
 			      term_t result ) {
     MY_dTHX;
-    dMY_CXT;
+    MY_dMY_CXT;
     dSP;
 
     SV *svname = swi2perl_atom_sv_ex(aTHX_ name);
@@ -161,7 +161,7 @@ static foreign_t swi2perl_sub(term_t name,
 static foreign_t swi2perl_eval(term_t code,
 			       term_t result) {
     MY_dTHX;
-    dMY_CXT;
+    MY_dMY_CXT;
     dSP;
     
     SV *svcode = swi2perl_atom_sv_ex(aTHX_ code);
@@ -189,7 +189,7 @@ static foreign_t swi2perl_method(term_t object,
 				 term_t args,
 				 term_t result) {
     MY_dTHX;
-    dMY_CXT;
+    MY_dMY_CXT;
     dSP;
     SV *svmethod = swi2perl_atom_sv_ex(aTHX_ method);
     if (svmethod) {
