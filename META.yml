@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Language-Prolog-Yaswi
-version:             0.15
+version:             0.16
 abstract:            Yet another interface to SWI-Prolog
 license:             ~
 author:              

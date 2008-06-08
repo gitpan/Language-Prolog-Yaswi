@@ -201,7 +201,7 @@ pl_unify_perl_object(pTHX_ term_t t, SV *sv, AV *refs, AV *cells) {
 	return PL_unify_nil(t);
     
     if (sv_isa(sv, TYPEINTPKG "::opaque"))
-	return pl_unify_perl_iopaque(aTHX_ t, SvRV(sv), refs, cells);
+	return pl_unify_perl_iopaque(aTHX_ t, sv, refs, cells);
     
     if (sv_isa(sv, TYPEINTPKG "::ulist"))
 	return pl_unify_perl_iulist(aTHX_ t, SvRV(sv), refs, cells);
