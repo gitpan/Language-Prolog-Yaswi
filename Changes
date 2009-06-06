@@ -1,9 +1,16 @@
 Revision history for Perl extension Language::Prolog::Yaswi.
 
+0.17  Jun 06, 2008
+        - work around for bug in SWI-Prolog package for Debian/Ubuntu
+          on amd64
+        - 64bit cleanup
+        - corrected some errors in the documentation (reported by
+          William Kisman)
+
 0.16  Jun 08, 2008
         - opaque marshalling was not working on latest versions (bug
           reported by William Kisman).
-        - test for opaque objects added
+        - tests for opaque objects added
 
 0.15  May 30, 2008
         - module updated to compile under perl 5.10.0 (bug reported by
