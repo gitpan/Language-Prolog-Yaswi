@@ -1,16 +1,24 @@
 --- #YAML:1.0
-name:                Language-Prolog-Yaswi
-version:             0.18
-abstract:            Yet another interface to SWI-Prolog
-license:             ~
-author:              
+name:               Language-Prolog-Yaswi
+version:            0.19
+abstract:           Yet another interface to SWI-Prolog
+author:
     - Salvador Fandiño <sfandino@yahoo.com>
-generated_by:        ExtUtils::MakeMaker version 6.42
-distribution_type:   module
-requires:     
-    Language::Prolog::Sugar:       0.03
-    Language::Prolog::Types:       0.09
-    Test::More:                    0
+license:            unknown
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
+requires:
+    Language::Prolog::Sugar:  0.03
+    Language::Prolog::Types:  0.09
+    Test::More:           0
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.56
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
-    version: 1.3
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4
